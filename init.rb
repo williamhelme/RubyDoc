@@ -1,8 +1,18 @@
 require 'pathname'
 $inc_unix = false
 $root = ""
-def is_excluded(x)
-  return x =~ /^\./
+
+#this exclusion by name can later be developed by bringing in values from a txt file and add them to the array
+$excluded = ['test','abc']
+
+def is_excluded(val)
+  case 
+  when val =~ /^\./
+    return true
+  when $excluded.include?(val) 
+    return true 
+  end
+  return false
 end
 
 def loop_cur_folder(folder)
