@@ -6,22 +6,29 @@ require 'readmefy/string'
 # readmefy .
 
 class Readmefy
-  def self.recurse dir = nil
+  def self.recurse dir = nil, mode = 'w'
     dir ||= '.'
-    Dir.entries(dir).each do | f |
-      if f.ok?
-        if f.directory?
-          # puts "Iterating over: " + f
-          self.recurse f
-        else
-          # check file and pull comment section out when readme tag found
-          # puts "  File found: " + f
-          f.extract_comments
+    comments = ''
+    files = Dir.entries dir
+    File.open( './README.md', mode ) { | readme |
+      files.each do | f |
+        if f.ok?
+          path = dir + '/' + f
+          if path.directory?
+            self.recurse path, 'a'
+          else
+            comments += self.extract_comments path
+          end
         end
       end
-    end
+      readme.write comments
+    }
+    files # return
   end
-  def self.extract_comments
+  def self.extract_comments f
+    content = "===" + f + "===\n"
+    content += IO.read( f )
+    content || ''
   end
 end
 
